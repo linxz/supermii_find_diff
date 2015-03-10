@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+<meta charset="UTF-8">
+<title id="page_title">SuperMii酷脸 找茬</title>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, minimal-ui">
+<style>
+* {margin: 0;padding: 0;}
+html,body {width: 100%;height: 100%;}
+body {-webkit-touch-callout: none; -webkit-user-select: none; -webkit-highlight: none; -webkit-tap-highlight-color: rgba(0,0,0,0);font-family: Roboto, 'Droid Sans', 'Hiragino Sans GB', 'MicroSoft YaHei', 'Simsun', STXihei, 'sans-serif';background-color:#2C2A2B;}
+.wrap {position: relative;width: 100%;font-size: 20px;line-height: 1.5;}
+.wrap * {box-sizing:border-box;}
+.img_wrap {clear: both;overflow: hidden;padding-top:30px; border: 1px solid #2C2A2B;}
+.img_wrap img {display: block;width: 100%;}
+.img_wrap div {position: relative;float: left;width: 50%;border:2px solid #2C2A2B;}
+.img_wrap div + div {float: right;}
+.img_wrap .sel_item,
+.img_wrap .sel_item_cp {position: absolute;width: 20%;height: 20%;-webkit-appearance:none;border:4px solid #000;background-color: rgba(255,0,0,.2);border-radius: 50%;z-index: 2;outline: 0 none;opacity: 0;}
+.img_wrap .sel_item:checked {border:0 none;background:url(img_page/sel_right.png) center center/cover no-repeat;opacity: 1;
+	-webkit-animation:sel 300ms linear;
+	animation:sel 300ms linear;
+}
+.img_wrap .sel_item_cp.checked {border:0 none;background:url(img_page/sel_left.png) center center/cover no-repeat;opacity: 1;
+	-webkit-animation:sel 300ms linear;
+	animation:sel 300ms linear;
+}
+
+@-webkit-keyframes sel {
+	0% {-webkit-transform: rotate(0);opacity:0;-webkit-transform-origin:50%;}
+	100% {-webkit-transform:rotate(360deg);opacity:1;}
+}
+@keyframes sel {
+	0% {transform:rotate(0);opacity:0;transform-origin:50%;}
+	100% {transform:rotate(360deg);opacity:1;}
+}
+
+
+.data_box {position:fixed;top:0;left:0;width:100%;height:30px;overflow:hidden;padding:8px 0;font-size:16px;background-color:#2C2A2B;color:#FEFEFE;z-index:10;}
+.result {float: left;height:20px;line-height: 20px;}
+.result span {padding: 0 5px;margin-right:20px;color: #FEFD01;}
+.result span.total {color:#FA0200;}
+
+.game_time{float:left;padding-left:10px;}
+/* time scroll*/
+.game_time span,
+.game_time .bar_bg,
+.game_time .bar {float:left;height:16px;line-height:20px;}
+.game_time .bar_bg {width:200px;overflow:hidden;margin:0 30px 0 10px;background:#666666;border-radius:10px;}
+.game_time .bar {background:#CCFF00;border-radius:10px;}
+.game_time .bar.bar_mid {background:#FFCC00;}
+.game_time .bar.bar_low {background:#FF3333;}
+.time {float:left;width:30px;height:20px;margin:0 20px;background-color:#e45534;border-radius:20px;text-align:center;line-height:20px;font-size:18px;color: #ff0;}
+
+.result_page {display: none;position: fixed;top: 0;left: 0;right: 0;bottom: 0;text-align: center;background-color: rgba(0,0,0,.8);color:#fff;z-index: 999;}
+.result_page .show {position:absolute;top:50px;left:50%;width:290px;height:285px;overflow:hidden;margin-left:-185px;background-color:#0B0A18;box-shadow:0 0 30px 10px #5A4FCF, 0 0 10px 2px #5A4FCF inset;}
+.result_page .show h3 {padding-top:20px;font-size:20px;font-weight:normal;color:#FFFF09;}
+.result_page .result {float: none;padding-top: 20px;font-size: 18px;}
+.result_page .result span {margin:0;}
+.result_page .app {position:absolute;bottom:10px;left:50%;width:120px;height:120px;margin-left:-60px;text-align:center;white-space:nowrap;}
+.result_page .app img {display:block;width:64px;height:64px;margin:0 auto 5px;}
+.result_page .app:after {position:absolute;top:30px;right:5px;width:49px;height:42px;overflow:hidden;line-height:999em;font-size:0;content:"";background:url(img_page/pointer.png) no-repeat 0 0/cover;}
+.result_page .share {position:absolute;top:10px;right:10px;text-align:right;}
+.result_page .share img {float:right;width:26px;height:45px;margin-right:10px;}
+.result_page .share span {clear:both;display:block;padding-top:10px;}
+/* 竖屏样式 */
+@media all and (orientation : portrait){
+	.img_wrap div {width: 100%;}
+}
+@media screen and (max-width:568px) {
+	.game_time .bar_bg {width:180px;}
+}
+@media screen and (max-width:480px) {
+	.game_time .bar_bg {width:120px;}
+}
+
+.index_page {position: fixed;top: 0;left: 0;right: 0;bottom: 0;background-color: #FFCC00;text-align: center;z-index: 999;}
+.index_wrap {position:absolute;top:30%;left:50%;width:240px;text-align:center;margin:-15% 0 0 -120px;}
+.index_wrap .logo {width:170px;height:165px;margin-bottom:10px;}
+.index_wrap .go {display:inline-block;padding:5px 10px;margin-bottom:10px;color:#171400;text-decoration:none;font-weight:bold;
+	-webkit-animation:begin 300ms infinite ease-in-out;
+	animation:begin 300ms infinite ease-in-out;
+}
+.index_wrap .tips,
+.index_wrap .ori_tips {display:inline-block;padding:5px 15px;font-weight:normal;background-color:#191400;border-radius:5px;color:#EDEFEE;}
+.index_wrap .ori_tips {display:none;}
+.index_wrap .tips strong {font-weight:normal;color:#BEF200;}
+@media all and (orientation : portrait){
+	.index_wrap .go,
+	.index_wrap .tips {display:none;}
+	.index_wrap .ori_tips {display:block;padding:8px 10px;border:3px solid #f00;}
+}
+
+@-webkit-keyframes begin {
+	0% {opacity:0;}
+	50% {opacity:1;}
+	70% {opacity:0;}
+	100% {opacity:1;}
+}
+@keyframes begin {
+	0% {opacity:0;}
+	50% {opacity:1;}
+	70% {opacity:0;}
+	100% {opacity:1;}
+}
+</style>
+<script src="jquery-2.1.1.min.js"></script>
+<script src="fastclick.js"></script>
+<script src="time.js"></script>
+<script>
+	window.addEventListener('load', function () {
+		FastClick.attach(document.body);
+	}, false);
+</script>
+
+</head>
+<body>
+
+<img src="img_page/logo.png" alt="" style="width:0;height:0;" />
+
+<div class="result_page">
+	<div class="show">
+		<h3>真是神一般的存在！</h3>
+		<p class="result">你找到了<span class="num">0</span>个茬，得<span class="total">0</span>分！</p>
+		<p class="show_title" style="display:none;">我找到了<span class="num">0</span>个茬，得了<span class="total">0</span>分，史上最难找茬，不服来战！</p>
+		<div class="app"><a href="http://mp.weixin.qq.com/mp/redirect?url=https%3A%2F%2Fitunes.apple.com%2Fcn%2Fapp%2Fsupermii-ku-lian-zhuan-shu%2Fid931181673" target="_blank"><img src="img_page/logo.png" alt="" /></a><span>捏脸技术哪家强？</span></div>
+	</div>
+	<div class="share"><img src="img_page/guide.png" alt="" /><span>右上角分享给小伙伴</span></div>
+</div>
+
+<div class="index_page">
+	<div class="index_wrap">
+		<img src="img_page/game_logo.png" alt="" class="logo" />
+		<span class="go">★ 开始游戏 ★</span>
+		<p class="tips">在<strong>60秒</strong>内看谁得分最高！</p>
+		<p class="ori_tips">请先将屏幕切换成横屏显示后再开始游戏</p>
+	</div>
+</div>
+
+<div class="wrap">
+	<div class="data_box">
+		<div class="game_time">
+			<span>TIME:</span><span class="bar_bg"><span class="bar" style="width:100%;"></span></span><!-- <span class="time"></span> -->
+		</div>
+
+		<p class="result">FIND: <span class="num">0</span> SCORE: <span class="total">0</span></p>
+	</div>
+	<div class="img_wrap">
+		<div class="origin_img">
+			<img src="img/img_1_diff.png" alt="">
+			<label for="sel_1" class="sel_item_cp"></label>
+			<label for="sel_2" class="sel_item_cp"></label>
+			<label for="sel_3" class="sel_item_cp"></label>
+			<label for="sel_4" class="sel_item_cp"></label>
+			<label for="sel_5" class="sel_item_cp"></label>
+		</div>
+		<div class="find_img">
+			<img src="img/img_1.png" alt="">
+			<input type="checkbox" class="sel_item" id="sel_1" value="1">
+			<input type="checkbox" class="sel_item" id="sel_2" value="2">
+			<input type="checkbox" class="sel_item" id="sel_3" value="3">
+			<input type="checkbox" class="sel_item" id="sel_4" value="4">
+			<input type="checkbox" class="sel_item" id="sel_5" value="5">
+		</div>
+	</div>
+</div>
+<img src="img_page/logo.png" alt="" style="width:0;height:0;" />
+<script>
+$(document).ready(function(){
+	$(".index_page .go").click(function(){
+		$(".index_page").css("display","none");
+		countDown();
+	})
+
+	var $item = $(".sel_item"),
+		$item_cp = $(".sel_item_cp");
+
+	var i=0,j=0,single_total=0,num=0,total=0,pic_num=1,pos=1;
+
+	$(".find_img img").click(function(){
+		console.log("乱点！算了，不扣你分！");
+	});
+
+	var pic_array=[];
+    var r=parseInt(Math.random()*19+1);
+	for(var pic_i=0;pic_i<20;pic_i++){
+		var flag=0;
+		do{
+			for(var pic_j=0;pic_j<pic_array.length;pic_j++){
+				if(pic_array[pic_j]==r) {flag=1;break;}
+			}
+			if(!flag) {
+				pic_array[pic_array.length]=r;
+			}else{
+				r=parseInt(Math.random()*19+1);
+			}
+		}while(!flag);
+	}
+	console.log(pic_array + " ");
+
+	Array.prototype.remove=function(dx)
+	{
+	    if(isNaN(dx)||dx>this.length){return false;}
+	    for(var i=0,n=0;i<this.length;i++){
+	        if(this[i]!=this[dx]) {
+	            this[n++]=this[i];
+	        }
+	    }
+	    this.length-=1;
+	}
+
+	var item_arr_1 = [["3%","22%"],["57%","24%"],["63%","40%"],["23%","45%"],["80%","39%"]],
+		item_arr_2 = [["80%","52%"],["70%","40%"],["30%","34%"],["53%","4%"],["55%","20%"]],
+		item_arr_3 = [["48%","40%"],["10%","72%"],["80%","36%"],["57%","80%"],["20%","0%"]],
+		item_arr_4 = [["68%","30%"],["5%","46%"],["45%","44%"],["55%","8%"],["85%","33%"]],
+		item_arr_5 = [["70%","40%"],["39%","77%"],["17%","30%"],["70%","12%"],["28%","55%"]],
+		item_arr_6 = [["58%","6%"],["39%","52%"],["85%","53%"],["38%","20%"],["58%","26%"]],
+		item_arr_7 = [["33%","18%"],["78%","20%"],["80%","40%"],["65%","40%"],["65%","61%"]],
+		item_arr_8 = [["11%","28%"],["69%","7%"],["67%","40%"],["80%","49%"],["56%","61%"]],
+		item_arr_9 = [["36%","41%"],["62%","40%"],["74%","40%"],["80%","33%"],["45%","78%"]],
+		item_arr_10 = [["10%","40%"],["49%","18%"],["59%","40%"],["80%","40%"],["33%","79%"]],
+		item_arr_11 = [["22%","15%"],["68%","6%"],["57%","22%"],["66%","69%"],["80%","47%"]],
+		item_arr_12 = [["16%","17%"],["47%","1%"],["62%","75%"],["77%","41%"],["80%","12%"]],
+		item_arr_13 = [["39%","17%"],["44%","53%"],["68%","41%"],["80%","30%"],["65%","65%"]],
+		item_arr_14 = [["80%","6%"],["34%","1%"],["59%","40%"],["77%","65%"],["80%","40%"]],
+		item_arr_15 = [["20%","44%"],["80%","44%"],["60%","14%"],["80%","85%"],["49%","40%"]],
+		item_arr_16 = [["22%","0%"],["47%","32%"],["80%","40%"],["51%","55%"],["40%","77%"]],
+		item_arr_17 = [["80%","40%"],["62%","0%"],["60%","40%"],["55%","56%"],["58%","73%"]],
+		item_arr_18 = [["30%","5%"],["45%","56%"],["68%","40%"],["80%","46%"],["83%","29%"]],
+		item_arr_19 = [["35%","40%"],["47%","16%"],["68%","40%"],["47%","65%"],["80%","40%"]],
+		item_arr_20 = [["57%","56%"],["59%","11%"],["82%","40%"],["80%","3%"],["82%","70%"]];
+	for (i = 0; i < eval("item_arr_" + pic_array[0]).length; i++) {
+		$item[i].style.top = $item_cp[i].style.top = eval("item_arr_" + pic_array[0])[i][0];
+		$item[i].style.left = $item_cp[i].style.left = eval("item_arr_" + pic_array[0])[i][1];
+	};
+
+	// console.log(eval("item_arr_" + pic_array[0]));
+	console.log(pic_array[0]);
+
+	$(".origin_img img").attr("src","img/img_" + pic_array[0] + "_diff.png");
+	$(".find_img img").attr("src","img/img_" + pic_array[0] + ".png");
+	pic_array.remove(0);
+
+	$(".origin_img img").after("<img src='img/img_" + pic_array[0] + "_diff.png' style='width:0;' />");
+	$(".find_img img").after("<img src='img/img_" + pic_array[0] + ".png' style='width:0;' />");
+
+	$item.click(function(){
+		if($(this).attr("checked","true")){
+			$(this).attr("disabled","true");
+			$item_cp[$(this).val() - 1].className = "sel_item_cp checked";
+			single_total++;
+			$(".num").text(++num);
+			var rand = parseInt((Math.random()+1)*10);
+			total += rand;
+			$(".total").text(total);
+
+			// setTimeout(function(){
+				if(single_total % 5 == 0){
+					console.log(pic_array[0]);
+					for(var k=0;k<$item.length;k++){
+						$item[k].disabled = false;
+						$item[k].checked = false;
+						$item_cp[k].className = "sel_item_cp";
+					}
+
+					for (i = 0; i < eval("item_arr_" + pic_array[0]).length; i++) {
+						$item[i].style.top = $item_cp[i].style.top = eval("item_arr_" + pic_array[0])[i][0];
+						$item[i].style.left = $item_cp[i].style.left = eval("item_arr_" + pic_array[0])[i][1];
+					};
+				}
+			// }, 500);
+
+			if(single_total % 5 == 0){
+				// console.log(eval("item_arr_" + pic_array[0]));
+				// console.log(pic_array[0]);
+				$(".origin_img img + img").remove();
+				$(".find_img img + img").remove();
+				$(".origin_img img").attr("src","img/img_" + pic_array[0] + "_diff.png");
+				$(".find_img img").attr("src","img/img_" + pic_array[0] + ".png");
+
+				$(".origin_img img").after("<img src='img/img_" + pic_array[1] + "_diff.png' style='width:0;' />");
+				$(".find_img img").after("<img src='img/img_" + pic_array[1] + ".png' style='width:0;' />");
+    			// $(".result_page .result").after("<img src='img/img_" + pic_array[0] + ".png' style='height:50%;' />");
+				pic_array.remove(0);
+			}
+		}else{
+			console.log("失败～！");
+		}
+		// $(".result_page img + img").remove();
+	});
+})
+</script>
+<div style="display:none;">
+<script language="javascript" type="text/javascript" src="http://js.users.51.la/385492.js"></script>
+<noscript><a href="http://www.51.la/?385492" target="_blank"><img alt="&#x6211;&#x8981;&#x5566;&#x514D;&#x8D39;&#x7EDF;&#x8BA1;" src="http://img.users.51.la/385492.asp" style="border:none" /></a></noscript>
+</div>
+</body>
+</html>
